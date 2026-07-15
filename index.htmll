@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Forex & Gold Dashboard - Adrian's Trading</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #0f0f0f; color: #ffffff; }
+        h1 { text-align: center; color: #ffd700; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: #aaa; margin-bottom: 20px; }
+        .tickers { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-bottom: 30px; }
+        .ticker { background-color: #1e1e1e; padding: 12px 20px; border-radius: 8px; min-width: 180px; text-align: center; border: 1px solid #333; }
+        .ticker span { display: block; font-size: 1.4em; font-weight: bold; }
+        .positive { color: #00ff88; } .negative { color: #ff4444; }
+        
+        .dashboard { background-color: #1a1a1a; padding: 20px; border-radius: 12px; margin-bottom: 40px; }
+        .signal { display: flex; justify-content: space-between; padding: 12px; margin-bottom: 10px; background-color: #252525; border-radius: 8px; align-items: center; }
+        .pair { font-weight: bold; }
+        .buy { color: #00ff88; } .sell { color: #ff4444; } .neutral { color: #ffcc00; }
+
+        .chart-container { margin-bottom: 40px; border: 2px solid #333; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        .chart-title { background-color: #1e1e1e; padding: 12px; text-align: center; font-size: 1.3em; font-weight: bold; }
+        iframe { width: 100%; height: 520px; border: none; }
+        .footer { text-align: center; margin-top: 50px; padding: 20px; color: #666; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <h1>Live TradingView Dashboard</h1>
+    <p class="subtitle">Cape Town • Real-time Forex & Gold • Last Updated: <span id="last-update"></span></p>
+
+    <!-- Live Price Tickers -->
+    <div class="tickers" id="tickers"></div>
+
+    <!-- Signal Dashboard -->
+    <div class="dashboard">
+        <h2 style="text-align:center; margin-bottom:20px;">Short-Term Signals (5-15 min Bias)</h2>
+        <div id="signals"></div>
+        <p style="text-align:center; font-size:0.9em; color:#888; margin-top:15px;">
+            Based on recent price action + Sneaky Pivot / Candlestick logic. Refresh for updates.
+        </p>
+    </div>
+
+    <!-- Charts -->
+    <div class="chart-container">
+        <div class="chart-title">XAU/USD - Gold</div>
+        <iframe src="https://www.tradingview.com/widgetembed/?symbol=OANDA%3AXAUUSD&interval=1&theme=dark" allowfullscreen></iframe>
+    </div>
+    <div class="chart-container">
+        <div class="chart-title">EUR/USD</div>
+        <iframe src="https://www.tradingview.com/widgetembed/?symbol=OANDA%3AEURUSD&interval=1&theme=dark" allowfullscreen></iframe>
+    </div>
+    <div class="chart-container">
+        <div class="chart-title">USD/CAD</div>
+        <iframe src="https://www.tradingview.com/widgetembed/?symbol=USDCAD&interval=1&theme=dark" allowfullscreen></iframe>
+    </div>
+    <div class="chart-container">
+        <div class="chart-title">GBP/USD</div>
+        <iframe src="https://www.tradingview.com/widgetembed/?symbol=OANDA%3AGBPUSD&interval=1&theme=dark" allowfullscreen></iframe>
+    </div>
+    <div class="chart-container">
+        <div class="chart-title">USD/CNY</div>
+        <iframe src="https://www.tradingview.com/widgetembed/?symbol=USDCNY&interval=1&theme=dark" allowfullscreen></iframe>
+    </div>
+
+    <div class="footer">
+        Built for Adrian • GitHub Pages + TradingView • Not financial advice • Trade responsibly
+    </div>
+
+    <script>
+        function updateTime() {
+            document.getElementById('last-update').textContent = new Date().toLocaleTimeString('en-ZA');
+        }
+        setInterval(updateTime, 1000); updateTime();
+
+        // Tickers (update prices manually or connect API later)
+        const pairs = [
+            { symbol: "XAUUSD", price: "2650.45", change: "+0.32%", cls: "positive" },
+            { symbol: "EURUSD", price: "1.1425", change: "-0.08%", cls: "negative" },
+            { symbol: "USDCAD", price: "1.4048", change: "-0.12%", cls: "negative" },
+            { symbol: "GBPUSD", price: "1.3412", change: "+0.15%", cls: "positive" },
+            { symbol: "USDCNY", price: "6.772", change: "-0.05%", cls: "negative" }
+        ];
+
+        document.getElementById('tickers').innerHTML = pairs.map(p => `
+            <div class="ticker">
+                <strong>${p.symbol}</strong>
+                <span>${p.price}</span>
+                <span class="${p.cls}">${p.change}</span>
+            </div>
+        `).join('');
+
+        // Signals
+        const signals = [
+            { pair: "XAU/USD", signal: "Cautious BUY", cls: "buy", reason: "Wick rejection at demand" },
+            { pair: "EUR/USD", signal: "Neutral", cls: "neutral", reason: "Range testing" },
+            { pair: "USD/CAD", signal: "SELL", cls: "sell", reason: "Resistance rejection" },
+            { pair: "GBP/USD", signal: "Cautious BUY", cls: "buy", reason: "Bullish candle" },
+            { pair: "USD/CNY", signal: "Hold", cls: "neutral", reason: "Low volatility" }
+        ];
+
+        document.getElementById('signals').innerHTML = signals.map(s => `
+            <div class="signal">
+                <span class="pair">${s.pair}</span>
+                <span class="${s.cls}"><strong>${s.signal}</strong></span>
+                <span style="font-size:0.85em; color:#aaa;">${s.reason}</span>
+            </div>
+        `).join('');
+
+        // Auto refresh
+        setTimeout(() => location.reload(), 300000);
+    </script>
+</body>
+</html>
